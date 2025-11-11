@@ -1,14 +1,27 @@
-from typing import Optional
-
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 
+# Autoriser les requêtes de ton navigateur
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.get("/")
-async def root():
-    return {"message": "Hello World"}
+def home():
+    return {"message": "Bienvenue sur ton agent Render 🚀"}
 
-@app.get("/items/{item_id}")
-def read_item(item_id: int, q: Optional[str] = None):
-    return {"item_id": item_id, "q": q}
+@app.post("/api/chat")
+async def chat(request: Request):
+    data = await request.json()
+    user_message = data.get("message", "")
+    print("📩 Message reçu :", user_message)
+
+    # Réponse basique (tu pourras la rendre plus intelligente plus tard)
+    bot_reply = f"Tu as dit : {user_message}"
+
+    return {"reply": bot_reply}
